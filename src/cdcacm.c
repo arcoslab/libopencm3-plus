@@ -224,7 +224,8 @@ static void usbusart_out(usbd_device *usbd_dev, u8 ep)
 	buf[1]='b';
 	while (usbd_ep_write_packet(usbd_dev, 0x82, buf, 2) == 0);
 
-	gpio_toggle(GPIOC, GPIO5);
+	gpio_toggle(GPIOD, GPIO12);
+
 }
 
 static void usbusart_in(usbd_device *usbd_dev, u8 ep)
