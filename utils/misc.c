@@ -18,6 +18,14 @@
 
 #include "misc.h"
 
+void wait(int a) {
+  int i, j;
+  for (j=0; j< a; j++) {
+    for (i = 0; i < 100000; i++)   /* Wait a bit. */
+      __asm__("nop");
+  }
+}
+
 void printled(int a, int gpiop, int pin) {
   int i, j;
   for (j=0; j< 10; j++) {

@@ -30,4 +30,6 @@ long cdcacm_write(int fd, const char *ptr, int len);
 
 long cdcacm_read(int fd, char *ptr, int len);
 
+int cdcacm_get_config(void);
+
 #endif //CDCACM_H

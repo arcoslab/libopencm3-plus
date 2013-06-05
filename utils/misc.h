@@ -21,6 +21,8 @@
 
 #include <libopencm3/stm32/f4/gpio.h>
 
+void wait(int a);
+
 void printled(int a, int gpiop, int pin);
 
 #define LD3 GPIOD, GPIO13 //Orange
