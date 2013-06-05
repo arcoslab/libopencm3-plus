@@ -24,12 +24,13 @@
  * The device's unique id is used as the USB serial number string.
  */
 
-#include "cdcacm.h"
+#include <libopencm3/usb/usbd.h>
 #include <libopencm3/usb/cdc.h>
 #include <libopencm3/stm32/f4/gpio.h>
-#include <stdlib.h>
 #include <libopencm3/cm3/nvic.h>
+#include <stdlib.h>
 #include "utils.h"
+#include "cdcacm.h"
 
 usbd_device * usbdev;
 

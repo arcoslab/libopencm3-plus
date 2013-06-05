@@ -17,7 +17,6 @@
  */
 #ifndef CDCACM_H
 #define CDCACM_H
-#include <libopencm3/usb/usbd.h>
 
 #define CDCACM_PACKET_SIZE 	64
 #define CDCACM_READ_BUF_SIZE CDCACM_PACKET_SIZE*4
@@ -35,9 +34,4 @@ long cdcacm_write(int fd, const char *ptr, int len);
 
 long cdcacm_read(int fd, char *ptr, int len);
 
-//static const struct usb_device_descriptor dev;
-
-//extern usbd_device * usbdev;
-
-//extern cbuf_t cdc_cbuf_in;
 #endif
