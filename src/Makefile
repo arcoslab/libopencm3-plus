@@ -21,14 +21,7 @@ BINARY = cdcacm_example
 
 OBJS :=
 
-LDSCRIPT = ../stm32f4-discovery.ld
+LDSCRIPT = ../libopencm3-plus/libopencm3_plus.ld
 
-dir := cdcacm
-include $(dir)/rules.mk
-dir := utils
-include $(dir)/rules.mk
-dir := f4discovery
-include $(dir)/rules.mk
-
-include ../Makefile.include
+include Makefile.include
 

@@ -27,6 +27,15 @@ MEMORY
 	ram (rwx) : ORIGIN = 0x20000000, LENGTH = 128K
 }
 
+/*newlib syscalls*/
+EXTERN (_read)
+EXTERN (_write)
+EXTERN (_open)
+EXTERN (_close)
+EXTERN (_sbrk)
+EXTERN (_stat)
+EXTERN (_fstat)
+EXTERN (_lseek)
+
 /* Include the common ld script. */
 INCLUDE libopencm3_stm32f4.ld
-
