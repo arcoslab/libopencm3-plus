@@ -19,18 +19,25 @@
 #define CDCACM_H
 #include <libopencm3/usb/usbd.h>
 
+#define CDCACM_PACKET_SIZE 	64
+#define CDCACM_READ_BUF_SIZE CDCACM_PACKET_SIZE*4
+#define IRQ_PRI_USB		(2 << 4)
+
 void cdcacm_poll(void);
 
 void cdcacm_init(void);
 
-int cdcacm_get_config(void);
+int cdcacm_open(const char *path, int flags, int mode);
 
-static const struct usb_device_descriptor dev;
+int cdcacm_close(int fd);
 
-extern usbd_device * usbdev;
+long cdcacm_write(int fd, const char *ptr, int len);
 
-#define CDCACM_PACKET_SIZE 	64
-#define CDCACM_READ_BUF_SIZE CDCACM_PACKET_SIZE*4
+long cdcacm_read(int fd, char *ptr, int len);
+
+//static const struct usb_device_descriptor dev;
+
+//extern usbd_device * usbdev;
 
 //extern cbuf_t cdc_cbuf_in;
 #endif

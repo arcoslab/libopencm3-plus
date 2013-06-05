@@ -29,7 +29,7 @@
 #include <libopencm3/stm32/f4/gpio.h>
 #include <stdlib.h>
 #include <libopencm3/cm3/nvic.h>
-#include "mutex.h"
+#include "utils.h"
 
 usbd_device * usbdev;
 
@@ -39,8 +39,6 @@ cbuf_t cdc_cbuf_in= {
   .wmut=0,
   .rmut=0
 };
-
-#define IRQ_PRI_USB		(2 << 4)
 
 static int configured;
 
@@ -54,7 +52,6 @@ static const struct usb_endpoint_descriptor comm_endp[] = {{
 	.wMaxPacketSize = 16,
 	.bInterval = 255,
 }};
-
 
 char serial_no[9];
 
@@ -187,7 +184,6 @@ static const struct usb_config_descriptor config = {
 /* Buffer to be used for control requests. */
 u8 usbd_control_buffer[128];
 
-
 static int cdcacm_control_request(usbd_device *usbd_dev, 
 				  struct usb_setup_data *req, u8 **buf, u16 *len,
 				  void (**complete)(usbd_device *usbd_dev, struct usb_setup_data *req))
@@ -209,12 +205,10 @@ static int cdcacm_control_request(usbd_device *usbd_dev,
 	case USB_CDC_REQ_SET_LINE_CODING:
 		if (*len < sizeof(struct usb_cdc_line_coding))
 			return 0;
-
 		return 1;
 	}
 	return 0;
 }
-
 
 static void cdcacm_callback_in(usbd_device *usbd_dev, u8 ep)
 {
@@ -238,11 +232,9 @@ int cdcacm_get_config(void)
 static void cdcacm_set_config(usbd_device *usbd_dev, u16 wValue)
 {
 	configured = wValue;
-
 	usbd_ep_setup(usbd_dev, 0x01, USB_ENDPOINT_ATTR_BULK, CDCACM_PACKET_SIZE, cdcacm_callback_in);
 	usbd_ep_setup(usbd_dev, 0x82, USB_ENDPOINT_ATTR_BULK, CDCACM_PACKET_SIZE, cdcacm_callback_out);
 	usbd_ep_setup(usbd_dev, 0x83, USB_ENDPOINT_ATTR_INTERRUPT, 16, NULL);
-
 	usbd_register_control_callback(
 				usbd_dev,
 				USB_REQ_TYPE_CLASS | USB_REQ_TYPE_INTERFACE,
@@ -264,47 +256,78 @@ static void cdcacm_set_config(usbd_device *usbd_dev, u16 wValue)
 	usbd_ep_write_packet(usbd_dev, 0x83, buf, 10);
 }
 
+static char *get_dev_unique_id(char *s)
+{
+#if defined(STM32F4)
+  volatile uint32_t *unique_id_p = (volatile uint32_t *)0x1FFF7A10;
+#else
+  volatile uint32_t *unique_id_p = (volatile uint32_t *)0x1FFFF7E8;
+#endif
+  uint32_t unique_id = *unique_id_p +
+                       *(unique_id_p + 1) +
+                       *(unique_id_p + 2);
+  int i;
+
+  /* Fetch serial number from chip's unique ID */
+  for(i = 0; i < 8; i++) {
+    s[7-i] = ((unique_id >> (4*i)) & 0xF) + '0';
+  }
+  for(i = 0; i < 8; i++)
+    if(s[i] > '9')
+      s[i] += 'A' - '9' - 1;
+  s[8] = 0;
+  return s;
+}
+
+int cdcacm_open(const char *path, int flags, int mode) {
+  return(0);
+}
+
+int cdcacm_close(int fd) {
+  return(0);
+}
+
+long cdcacm_write(int fd, const char *ptr, int len) {
+  int index;
+  static char buf[CDCACM_PACKET_SIZE];
+  static int buf_pos=0;
+  /* For example, output string by UART */
+  for(index=0; index<len; index++)
+    {
+      buf[buf_pos]=ptr[index];
+      buf_pos+=1;
+      if (ptr[index] == '\n')
+	{
+	  buf[buf_pos]='\r';
+	  buf_pos+=1;
+	  while (usbd_ep_write_packet(usbdev, 0x82, buf, buf_pos) ==0);
+	  buf_pos=0;
+	}
+    }
+  return len;
+}
+
+long cdcacm_read(int fd, char *ptr, int len) {
+  //printf("read len %d\n", len);
+  while (cbuf_used(&cdc_cbuf_in) < len) {
+  };
+  return(cbuf_pop(&cdc_cbuf_in, ptr, len));
+}
+
 void cdcacm_init(void) {
   get_dev_unique_id(serial_no);
-
   usbdev = usbd_init(&otgfs_usb_driver, &dev, &config, usb_strings, sizeof(usb_strings)/sizeof(char *), usbd_control_buffer, sizeof(usbd_control_buffer));
   usbd_register_set_config_callback(usbdev, cdcacm_set_config);
-
   nvic_set_priority(NVIC_OTG_FS_IRQ, IRQ_PRI_USB);
   nvic_enable_irq(NVIC_OTG_FS_IRQ);
 }
 
-
 void cdcacm_poll(void) {
   usbd_poll(usbdev);
-    }
-
+}
 
 void otg_fs_isr(void)
 {
-	usbd_poll(usbdev);
+  usbd_poll(usbdev);
 }
 
-static char *get_dev_unique_id(char *s)
-{
-#if defined(STM32F4)
-        volatile uint32_t *unique_id_p = (volatile uint32_t *)0x1FFF7A10;
-#else
-        volatile uint32_t *unique_id_p = (volatile uint32_t *)0x1FFFF7E8;
-#endif
-	uint32_t unique_id = *unique_id_p +
-			*(unique_id_p + 1) +
-			*(unique_id_p + 2);
-        int i;
-
-        /* Fetch serial number from chip's unique ID */
-        for(i = 0; i < 8; i++) {
-                s[7-i] = ((unique_id >> (4*i)) & 0xF) + '0';
-        }
-        for(i = 0; i < 8; i++)
-                if(s[i] > '9')
-                        s[i] += 'A' - '9' - 1;
-	s[8] = 0;
-
-	return s;
-}
