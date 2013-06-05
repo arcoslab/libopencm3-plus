@@ -20,7 +20,6 @@
 #define UTILS_H
 
 #include <libopencm3/stm32/f4/gpio.h>
-#include "cdcacm.h"
 
 void printled(int a, int gpiop, int pin);
 
@@ -32,24 +31,6 @@ void printled(int a, int gpiop, int pin);
 #define LGREEN LD4
 #define LRED LD5
 #define LBLUE LD6
-
-
-typedef struct {
-  char buf[CDCACM_READ_BUF_SIZE];
-  int first_pos;
-  int last_pos;
-  int wmut;
-  int rmut;
-} cbuf_t;
-
-extern cbuf_t cdc_cbuf_in;
-int cbuf_used(cbuf_t* cbuf);
-
-int cbuf_free(cbuf_t* cbuf);
-
-int cbuf_pop(cbuf_t* cbuf, char *out, int out_len);
-
-int cbuf_append(cbuf_t* cbuf, char *in,  int in_size);
 
 int strlen2(char s[]);
 

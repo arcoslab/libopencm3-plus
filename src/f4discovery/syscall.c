@@ -81,13 +81,13 @@ unsigned char _heap[HEAPSIZE];
 caddr_t _sbrk(int incr) {
   static unsigned char *heap_end;
   unsigned char *prev_heap_end;
-  /* debugging
-  write( 2, "incr: ", 4);
+  ///* debugging
+  write( 2, "Asking for: ", 12);
   char incr_c[15];
   itoa(incr, incr_c);
   write( 2, incr_c, strlen2(incr_c));
-  write( 2, "\n", 1);
-  */
+  write( 2, " bytes.\n", 8);
+  //*/
 /* initialize */
   if( heap_end == 0 ) heap_end = _heap;
   prev_heap_end = heap_end;
