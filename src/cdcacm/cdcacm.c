@@ -29,7 +29,8 @@
 #include <libopencm3/stm32/f4/gpio.h>
 #include <libopencm3/cm3/nvic.h>
 #include <stdlib.h>
-#include "utils.h"
+#include "utils/misc.h"
+#include "utils/data_structs.h"
 #include "cdcacm.h"
 
 usbd_device * usbdev;

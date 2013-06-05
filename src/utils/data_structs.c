@@ -17,6 +17,8 @@
  */
 
 #include "mutex.h"
+#include "data_structs.h"
+#include "misc.h"
 
 int cbuf_used(cbuf_t* cbuf) {
   if (cbuf->last_pos >= cbuf->first_pos) {

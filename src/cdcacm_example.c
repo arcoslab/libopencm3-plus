@@ -19,9 +19,9 @@
 #include <libopencm3/stm32/f4/rcc.h>
 #include <libopencm3/stm32/f4/gpio.h>
 #include "cdcacm_example.h"
-#include "cdcacm.h"
+#include "cdcacm/cdcacm.h"
 #include <stdio.h>
-#include "mutex.h"
+#include "utils/mutex.h"
 
 void system_init(void) {
 	rcc_clock_setup_hse_3v3(&hse_8mhz_3v3[CLOCK_3V3_120MHZ]);

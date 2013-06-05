@@ -19,7 +19,7 @@
 #ifndef DATA_STRUCTS_H
 #define DATA_STRUCTS_H
 
-#include "cdcacm.h"
+#include "cdcacm/cdcacm.h"
 
 typedef struct {
   char buf[CDCACM_READ_BUF_SIZE];

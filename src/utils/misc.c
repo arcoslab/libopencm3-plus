@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "utils.h"
+#include "misc.h"
 
 void printled(int a, int gpiop, int pin) {
   int i, j;

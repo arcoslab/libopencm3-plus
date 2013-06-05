@@ -1,7 +1,7 @@
 ##
-## This file is part of the libopencm3 project.
+## This file is part of the cdcacm example
 ##
-## Copyright (C) 2009 Uwe Hermann <uwe@hermann-uwe.de>
+## Copyright (C) 2013 Federico Ruiz Ugalde <memeruiz@gmail.com>
 ##
 ## This library is free software: you can redistribute it and/or modify
 ## it under the terms of the GNU Lesser General Public License as published by
@@ -17,19 +17,7 @@
 ## along with this library.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-BINARY = cdcacm_example
+d := $(dir)
 
-OBJS +=
-
-LDSCRIPT = ../stm32f4-discovery.ld
-
-dir := cdcacm
-include $(dir)/rules.mk
-dir := utils
-include $(dir)/rules.mk
-dir := f4discovery
-include $(dir)/rules.mk
-
-$(info hola $(OBJS))
-include ../Makefile.include
+OBJS += $(d)/data_structs.o $(d)/misc.o
 
