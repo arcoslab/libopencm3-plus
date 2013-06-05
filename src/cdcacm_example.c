@@ -20,6 +20,8 @@
 #include <libopencm3/stm32/f4/gpio.h>
 #include "cdcacm_example.h"
 #include "cdcacm.h"
+#include <stdio.h>
+#include "mutex.h"
 
 void system_init(void) {
 	rcc_clock_setup_hse_3v3(&hse_8mhz_3v3[CLOCK_3V3_120MHZ]);
@@ -32,6 +34,9 @@ void system_init(void) {
 			GPIO9 | GPIO11 | GPIO12);
 	gpio_set_af(GPIOA, GPIO_AF10, GPIO9 | GPIO11 | GPIO12);
         gpio_mode_setup(GPIOD, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO12);
+        gpio_mode_setup(GPIOD, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO13);
+        gpio_mode_setup(GPIOD, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO14);
+        gpio_mode_setup(GPIOD, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO15);
 
 }
 
@@ -39,8 +44,34 @@ int main(void)
 {
   system_init();
   cdcacm_init();
+  char buf[50]="hola_orig";
+  int i, j;
+  int c;
+  int n_char=0;
+  setvbuf(stdin,NULL,_IONBF,0); // Sets stdin in unbuffered mode (normal for usart com)
   while (1){
-    //cdcacm_poll();
+    //printled(1, LRED);
+    /*
+    //For reading until enter:
+    n_char=scanf("%[^\r]", buf); // minicom generates \r for enters
+    c=getc(stdin); //To remove the \r from the buffer. If not,
+                   //the next time scanf is called will always
+                   //read \r not print it and printing nothing as a result. Getting "stuck"
+    */
+
+    //For reading until white-spaces and non-words:
+    n_char=scanf("%s", buf);
+
+    //For reading 10 chars and then printing them:
+    /**for (i=0; i<10; i++) {
+      c=getc(stdin);
+      buf[i]=c;
+      if (c=='\r') {
+	buf[++i]='\n';
+      }
+    }
+    buf[++i]='\0'; */
+    //printled(1, LRED);
+    printf("%s %d\n", buf, n_char);
   }
 }
-

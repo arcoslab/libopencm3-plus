@@ -29,13 +29,20 @@
 #include <libopencm3/stm32/f4/gpio.h>
 #include <stdlib.h>
 #include <libopencm3/cm3/nvic.h>
-
-#define IRQ_PRI_USB		(2 << 4)
-#define CDCACM_PACKET_SIZE 	64
-
-static int configured;
+#include "mutex.h"
 
 usbd_device * usbdev;
+
+cbuf_t cdc_cbuf_in= {
+  .first_pos=0,
+  .last_pos=0,
+  .wmut=0,
+  .rmut=0
+};
+
+#define IRQ_PRI_USB		(2 << 4)
+
+static int configured;
 
 static char *get_dev_unique_id(char *serial_no);
 
@@ -209,26 +216,17 @@ static int cdcacm_control_request(usbd_device *usbd_dev,
 }
 
 
-static void usbusart_out(usbd_device *usbd_dev, u8 ep)
+static void cdcacm_callback_in(usbd_device *usbd_dev, u8 ep)
 {
-	(void)ep;
-
-	char buf[64];
-	int len = usbd_ep_read_packet(usbd_dev, 0x01, buf, 64);
-
-	/*if (len) {
-		while (usbd_ep_write_packet(usbd_dev, 0x82, buf, len) == 0)
-			;
-			}*/
-	buf[0]='a';
-	buf[1]='b';
-	while (usbd_ep_write_packet(usbd_dev, 0x82, buf, 2) == 0);
-
-	gpio_toggle(GPIOD, GPIO12);
-
+  (void)ep;
+  static char buf[CDCACM_PACKET_SIZE];
+  int len = usbd_ep_read_packet(usbd_dev, 0x01, buf, CDCACM_PACKET_SIZE);
+  if (len > 0) {
+    cbuf_append(&cdc_cbuf_in, buf,  len);
+  }
 }
 
-static void usbusart_in(usbd_device *usbd_dev, u8 ep)
+static void cdcacm_callback_out(usbd_device *usbd_dev, u8 ep)
 {
 }
 
@@ -241,8 +239,8 @@ static void cdcacm_set_config(usbd_device *usbd_dev, u16 wValue)
 {
 	configured = wValue;
 
-	usbd_ep_setup(usbd_dev, 0x01, USB_ENDPOINT_ATTR_BULK, CDCACM_PACKET_SIZE, usbusart_out);
-	usbd_ep_setup(usbd_dev, 0x82, USB_ENDPOINT_ATTR_BULK, CDCACM_PACKET_SIZE, usbusart_in);
+	usbd_ep_setup(usbd_dev, 0x01, USB_ENDPOINT_ATTR_BULK, CDCACM_PACKET_SIZE, cdcacm_callback_in);
+	usbd_ep_setup(usbd_dev, 0x82, USB_ENDPOINT_ATTR_BULK, CDCACM_PACKET_SIZE, cdcacm_callback_out);
 	usbd_ep_setup(usbd_dev, 0x83, USB_ENDPOINT_ATTR_INTERRUPT, 16, NULL);
 
 	usbd_register_control_callback(

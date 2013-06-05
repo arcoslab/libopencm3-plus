@@ -19,7 +19,7 @@
 
 BINARY = cdcacm_example
 
-OBJS += cdcacm.o
+OBJS += cdcacm.o syscall.o mutex.o
 
 LDSCRIPT = ../stm32f4-discovery.ld
 
