@@ -38,7 +38,6 @@ ifeq ($(V),1)
 $(info We seem to be building the example in the source directory. Using local library!)
 endif
 endif
-$(info hola TOOLCHAIN_DIR: $(TOOLCHAIN_DIR))
 
 CFLAGS		+= -Os -g \
 		   -Wall -Wextra -Wimplicit-function-declaration \
@@ -53,6 +52,7 @@ LDFLAGS		+= --static -lc -lnosys -L$(TOOLCHAIN_DIR)/lib \
 		   -T$(LDSCRIPT) -nostartfiles -Wl,--gc-sections \
 		   -mthumb -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16
 OBJS		+= $(BINARY).o
+CLEAN		+= $(OBJS) $(OBJS:.o=.d)
 
 OOCD		?= openocd
 OOCD_INTERFACE	?= flossjtag
@@ -113,6 +113,7 @@ clean:
 	$(Q)rm -f *.hex
 	$(Q)rm -f *.srec
 	$(Q)rm -f *.list
+	$(Q)rm -f $(CLEAN)
 
 %.stlink-flash: %.bin
 	@printf "  FLASH  $<\n"

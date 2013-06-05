@@ -17,5 +17,11 @@
 ## along with this library.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-OBJS += cdcacm/cdcacm.o
+sp 		:= $(sp).x
+dirstack_$(sp)	:= $(d)
+d := $(dir)
 
+OBJS += $(d)/cdcacm.o
+
+d		:= $(dirstack_$(sp))
+sp		:= $(basename $(sp))

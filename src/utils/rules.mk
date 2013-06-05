@@ -17,7 +17,11 @@
 ## along with this library.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+sp 		:= $(sp).x
+dirstack_$(sp)	:= $(d)
 d := $(dir)
 
 OBJS += $(d)/data_structs.o $(d)/misc.o
 
+d		:= $(dirstack_$(sp))
+sp		:= $(basename $(sp))

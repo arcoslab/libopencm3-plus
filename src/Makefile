@@ -19,7 +19,7 @@
 
 BINARY = cdcacm_example
 
-OBJS +=
+OBJS :=
 
 LDSCRIPT = ../stm32f4-discovery.ld
 
@@ -30,6 +30,5 @@ include $(dir)/rules.mk
 dir := f4discovery
 include $(dir)/rules.mk
 
-$(info hola $(OBJS))
 include ../Makefile.include
 

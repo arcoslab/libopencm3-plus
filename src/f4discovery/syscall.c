@@ -18,8 +18,8 @@
 
 #include <errno.h>
 #include <sys/stat.h>
-#include "utils.h"
-#include "cdcacm.h"
+#include "utils/misc.h"
+#include "cdcacm/cdcacm.h"
 
 #undef errno
 extern int errno;
