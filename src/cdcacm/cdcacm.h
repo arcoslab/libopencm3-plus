@@ -18,10 +18,6 @@
 #ifndef CDCACM_H
 #define CDCACM_H
 
-#define CDCACM_PACKET_SIZE 	64
-#define CDCACM_READ_BUF_SIZE CDCACM_PACKET_SIZE*4
-#define IRQ_PRI_USB		(2 << 4)
-
 void cdcacm_poll(void);
 
 void cdcacm_init(void);
@@ -34,4 +30,4 @@ long cdcacm_write(int fd, const char *ptr, int len);
 
 long cdcacm_read(int fd, char *ptr, int len);
 
-#endif
+#endif //CDCACM_H

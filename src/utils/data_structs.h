@@ -19,17 +19,21 @@
 #ifndef DATA_STRUCTS_H
 #define DATA_STRUCTS_H
 
-#include "cdcacm/cdcacm.h"
-
+//Circular buffer
+//**********
 typedef struct {
-  char buf[CDCACM_READ_BUF_SIZE];
+  char* buf;
+  int size;
   int first_pos;
   int last_pos;
-  int wmut;
-  int rmut;
+  int wmut; //write mutex
+  int rmut; //read mutex
 } cbuf_t;
 
-extern cbuf_t cdc_cbuf_in;
+int cbuf_init(cbuf_t* cbuf, int size);
+
+void cbuf_del(cbuf_t* cbuf);
+
 int cbuf_used(cbuf_t* cbuf);
 
 int cbuf_free(cbuf_t* cbuf);
@@ -37,6 +41,6 @@ int cbuf_free(cbuf_t* cbuf);
 int cbuf_pop(cbuf_t* cbuf, char *out, int out_len);
 
 int cbuf_append(cbuf_t* cbuf, char *in,  int in_size);
+//**********
 
-#endif DATA_STRUCTS_H
-
+#endif // DATA_STRUCTS_H

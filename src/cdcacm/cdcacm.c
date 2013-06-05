@@ -32,19 +32,20 @@
 #include "utils/misc.h"
 #include "utils/data_structs.h"
 #include "cdcacm.h"
+#include "utils/common.h"
+
+#define IRQ_PRI_USB		(2 << 4)
+#define CDCACM_PACKET_SIZE 	64
+#define CDCACM_READ_BUF_SIZE CDCACM_PACKET_SIZE*4
 
 usbd_device * usbdev;
 
-cbuf_t cdc_cbuf_in= {
-  .first_pos=0,
-  .last_pos=0,
-  .wmut=0,
-  .rmut=0
-};
+cbuf_t cdc_cbuf_in;
 
 static int configured;
 
 static char *get_dev_unique_id(char *serial_no);
+int cdcacm_get_config(void);
 
 static const struct usb_endpoint_descriptor comm_endp[] = {{
 	.bLength = USB_DT_ENDPOINT_SIZE,
@@ -222,7 +223,7 @@ static void cdcacm_callback_in(usbd_device *usbd_dev, u8 ep)
   }
 }
 
-static void cdcacm_callback_out(usbd_device *usbd_dev, u8 ep)
+static void cdcacm_callback_out(NOT_USED usbd_device* usbd_dev,NOT_USED u8 ep)
 {
 }
 
@@ -281,15 +282,15 @@ static char *get_dev_unique_id(char *s)
   return s;
 }
 
-int cdcacm_open(const char *path, int flags, int mode) {
+int cdcacm_open(NOT_USED const char *path, NOT_USED int flags, NOT_USED int mode) {
   return(0);
 }
 
-int cdcacm_close(int fd) {
+int cdcacm_close(NOT_USED int fd) {
   return(0);
 }
 
-long cdcacm_write(int fd, const char *ptr, int len) {
+long cdcacm_write(NOT_USED int fd, const char *ptr, int len) {
   int index;
   static char buf[CDCACM_PACKET_SIZE];
   static int buf_pos=0;
@@ -309,7 +310,7 @@ long cdcacm_write(int fd, const char *ptr, int len) {
   return len;
 }
 
-long cdcacm_read(int fd, char *ptr, int len) {
+long cdcacm_read(NOT_USED int fd, char *ptr, int len) {
   //printf("read len %d\n", len);
   while (cbuf_used(&cdc_cbuf_in) < len) {
   };
@@ -317,6 +318,11 @@ long cdcacm_read(int fd, char *ptr, int len) {
 }
 
 void cdcacm_init(void) {
+  if (cbuf_init(&cdc_cbuf_in, CDCACM_READ_BUF_SIZE) != 0) { //couldn't initialize buffer for usb
+    while(1) {
+      printled(5, LRED);
+    }
+  }
   get_dev_unique_id(serial_no);
   usbdev = usbd_init(&otgfs_usb_driver, &dev, &config, usb_strings, sizeof(usb_strings)/sizeof(char *), usbd_control_buffer, sizeof(usbd_control_buffer));
   usbd_register_set_config_callback(usbdev, cdcacm_set_config);

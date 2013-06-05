@@ -39,5 +39,5 @@ void reverse(char s[]);
 
 void itoa(int n, char s[]);
 
-#endif UTILS_H
+#endif // UTILS_H
 

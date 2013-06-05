@@ -16,24 +16,52 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <sys/types.h>
+#include <stdlib.h>
 #include "mutex.h"
 #include "data_structs.h"
 #include "misc.h"
+
+//Circular buffer:
+//**********
+int cbuf_init(cbuf_t* cbuf, int size) {
+  cbuf->size=0;
+  cbuf->first_pos=0;
+  cbuf->last_pos=0;
+  cbuf->wmut=0;
+  cbuf->rmut=0;
+  cbuf->buf=malloc(sizeof(char)*size);
+  if (cbuf->buf == NULL) {
+    return(-1);
+  } else {
+    cbuf->size=size;
+    return(0);
+  }
+}
+
+void cbuf_del(cbuf_t* cbuf) {
+  free(cbuf->buf);
+  cbuf->first_pos=0;
+  cbuf->last_pos=0;
+  cbuf->wmut=0;
+  cbuf->rmut=0;
+  cbuf->buf=NULL;
+}
 
 int cbuf_used(cbuf_t* cbuf) {
   if (cbuf->last_pos >= cbuf->first_pos) {
     return(cbuf->last_pos-cbuf->first_pos);
   } else {
-    return(cbuf->last_pos+CDCACM_READ_BUF_SIZE-cbuf->first_pos);
+    return(cbuf->last_pos+cbuf->size-cbuf->first_pos);
   }
 }
 
 int cbuf_free(cbuf_t* cbuf) {
-  return(CDCACM_READ_BUF_SIZE-cbuf_used(cbuf));
+  return(cbuf->size-cbuf_used(cbuf));
 }
 
 int cbuf_pop(cbuf_t* cbuf, char *out, int out_len){
-  int i;
+  int i=0;
   gpio_toggle(LBLUE);
   LOCK(cbuf->rmut);
   for (i=0; i<out_len; i++) {
@@ -42,7 +70,7 @@ int cbuf_pop(cbuf_t* cbuf, char *out, int out_len){
     }
     out[i]=cbuf->buf[cbuf->first_pos];
     cbuf->first_pos++;
-    if (cbuf->first_pos == CDCACM_READ_BUF_SIZE) {
+    if (cbuf->first_pos == cbuf->size) {
       cbuf->first_pos=0;
     }
   }
@@ -58,7 +86,7 @@ int cbuf_append(cbuf_t* cbuf, char *in,  int in_size) {
     for (i=0; i<in_size; i++) {
       cbuf->buf[cbuf->last_pos]=in[i];
       cbuf->last_pos++;
-      if (cbuf->last_pos == CDCACM_READ_BUF_SIZE) {
+      if (cbuf->last_pos == cbuf->size) {
 	cbuf->last_pos=0;
       }
     }
@@ -66,3 +94,4 @@ int cbuf_append(cbuf_t* cbuf, char *in,  int in_size) {
   UNLOCK(cbuf->wmut);
   return(i);
 }
+//**********

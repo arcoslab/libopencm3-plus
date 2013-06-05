@@ -16,11 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MUTEX_H
-#define MUTEX_H
+#ifndef COMMON_H
+#define COMMON_H
 
-#define LOCK(mutex) __asm__("CPSID i;"); if (mutex == 0) { mutex=1;
-#define UNLOCK(mutex) mutex=0; }; __asm__("CPSIE i;");
+#define NOT_USED __attribute__ ((unused))
 
-#endif // MUTEX_H
-
+#endif //COMMON_H
