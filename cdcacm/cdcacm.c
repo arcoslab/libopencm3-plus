@@ -291,6 +291,10 @@ int cdcacm_close(NOT_USED int fd) {
   return(0);
 }
 
+void cdcacm_write_now(char* buf, int len) {
+  while (usbd_ep_write_packet(usbdev, 0x82, buf, len) ==0);
+}
+
 long cdcacm_write(NOT_USED int fd, const char *ptr, int len) {
   int index;
   static char buf[CDCACM_PACKET_SIZE];
@@ -300,14 +304,19 @@ long cdcacm_write(NOT_USED int fd, const char *ptr, int len) {
     {
       buf[buf_pos]=ptr[index];
       buf_pos+=1;
+      if (buf_pos == CDCACM_PACKET_SIZE/2) {
+	cdcacm_write_now(buf, buf_pos);
+	buf_pos=0;
+      }	
       if (ptr[index] == '\n')
 	{
 	  buf[buf_pos]='\r';
 	  buf_pos+=1;
-	  while (usbd_ep_write_packet(usbdev, 0x82, buf, buf_pos) ==0);
+	  cdcacm_write_now(buf, buf_pos);
 	  buf_pos=0;
 	}
     }
+
   return len;
 }
 
