@@ -24,6 +24,8 @@
  * The device's unique id is used as the USB serial number string.
  */
 
+#include <libopencm3/stm32/f4/rcc.h>
+#include <libopencm3/stm32/f4/gpio.h>
 #include <libopencm3/usb/usbd.h>
 #include <libopencm3/usb/cdc.h>
 #include <libopencm3/stm32/f4/gpio.h>
@@ -321,11 +323,19 @@ void cdcacm_reset(void) {
 }
 
 void cdcacm_init(void) {
+  //system setup
+  rcc_peripheral_enable_clock(&RCC_AHB1ENR, RCC_AHB1ENR_IOPAEN);
+  rcc_peripheral_enable_clock(&RCC_AHB2ENR, RCC_AHB2ENR_OTGFSEN);
+  gpio_mode_setup(GPIOA, GPIO_MODE_AF, GPIO_PUPD_NONE,
+			GPIO9 | GPIO11 | GPIO12);
+  gpio_set_af(GPIOA, GPIO_AF10, GPIO9 | GPIO11 | GPIO12);
+  //receive buffer setup
   if (cbuf_init(&cdc_cbuf_in, CDCACM_READ_BUF_SIZE) != 0) { //couldn't initialize buffer for usb
     while(1) {
       printled(5, LRED);
     }
   }
+  //usb setup
   get_dev_unique_id(serial_no);
   usbdev = usbd_init(&otgfs_usb_driver, &dev, &config, usb_strings, sizeof(usb_strings)/sizeof(char *), usbd_control_buffer, sizeof(usbd_control_buffer));
   usbd_register_set_config_callback(usbdev, cdcacm_set_config);
