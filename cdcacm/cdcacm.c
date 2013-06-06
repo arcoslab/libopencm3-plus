@@ -224,8 +224,12 @@ static void cdcacm_callback_in(usbd_device *usbd_dev, u8 ep)
   }
 }
 
+int cdcacm_sent=true;
+
 static void cdcacm_callback_out(NOT_USED usbd_device* usbd_dev,NOT_USED u8 ep)
 {
+  //printled(1, LORANGE);
+  cdcacm_sent=true;
 }
 
 int cdcacm_get_config(void)
@@ -292,7 +296,16 @@ int cdcacm_close(NOT_USED int fd) {
 }
 
 void cdcacm_write_now(char* buf, int len) {
+  //printled(1, LGREEN);
+  //while (cdcacm_sent == false) {};
+  //nvic_disable_irq(NVIC_OTG_FS_IRQ);
+  //cdcacm_sent=false;
+  //__asm__("CPSID i;");
   while (usbd_ep_write_packet(usbdev, 0x82, buf, len) ==0);
+  //cdcacm_sent=false;
+  //nvic_enable_irq(NVIC_OTG_FS_IRQ);
+  //__asm__("CPSIE i;");
+  //printled(2, LGREEN);
 }
 
 long cdcacm_write(NOT_USED int fd, const char *ptr, int len) {

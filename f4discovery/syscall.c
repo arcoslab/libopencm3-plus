@@ -91,12 +91,19 @@ caddr_t _sbrk(int incr) {
   static unsigned char *heap_end;
   unsigned char *prev_heap_end;
   ///* debugging
-  /*write( 2, "Asking for: ", 12);
-  char incr_c[15];
-  itoa(incr, incr_c);
-  write( 2, incr_c, strlen2(incr_c));
-  write( 2, " bytes.\n", 8);*/
+  ///*
+  static int first=0;
+  if (first==2) {
+    write( 2, "Asking for: ", 12);
+    char incr_c[15];
+    itoa(incr, incr_c);
+    write( 2, incr_c, strlen2(incr_c));
+    write( 2, " bytes.\n", 8);
+  } else {
+    first++;
+  }
   //*/
+  //
 /* initialize */
   if( heap_end == 0 ) heap_end = _heap;
   prev_heap_end = heap_end;
