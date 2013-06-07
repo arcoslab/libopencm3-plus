@@ -25,6 +25,8 @@ void wait(int a);
 
 void printled(int a, int gpiop, int pin);
 
+void printled2(int rep, int time, int gpiop, int pin);
+
 #define LD3 GPIOD, GPIO13 //Orange
 #define LD4 GPIOD, GPIO12 //green
 #define LD5 GPIOD, GPIO14 //red

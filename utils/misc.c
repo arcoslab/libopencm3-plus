@@ -26,18 +26,34 @@ void wait(int a) {
   }
 }
 
-void printled(int a, int gpiop, int pin) {
+void printled(int rep, int gpiop, int pin) {
   int i, j;
   for (j=0; j< 10; j++) {
     for (i = 0; i < 1000000; i++)   /* Wait a bit. */
       __asm__("nop");
   }
-  for (i=0; i<a; i++) {
+  for (i=0; i<rep; i++) {
     gpio_set(gpiop, pin);
     for (j = 0; j < 8000000; j++)   /* Wait a bit. */
       __asm__("nop");
     gpio_clear(gpiop, pin);
     for (j = 0; j < 8000000; j++)   /* Wait a bit. */
+      __asm__("nop");
+  }
+}
+
+void printled2(int rep, int time, int gpiop, int pin) {
+  int i, j;
+  for (j=0; j< 100; j++) {
+    for (i = 0; i < time*1000; i++)   /* Wait a bit. */
+      __asm__("nop");
+  }
+  for (i=0; i<rep; i++) {
+    gpio_set(gpiop, pin);
+    for (j = 0; j < time*100000; j++)   /* Wait a bit. */
+      __asm__("nop");
+    gpio_clear(gpiop, pin);
+    for (j = 0; j < time*100000; j++)   /* Wait a bit. */
       __asm__("nop");
   }
 }
