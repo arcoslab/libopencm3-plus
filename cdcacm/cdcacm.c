@@ -346,6 +346,14 @@ void cdcacm_reset(void);
 void cdcacm_reset(void) {
 }
 
+int cdcacm_in_poll(int fd) {
+  if (fd == 0) { //std
+    return(cbuf_used(&cdc_cbuf_in));
+  } else {
+    return(-1);
+  }
+}
+
 void cdcacm_init(void) {
   //system setup
   rcc_peripheral_enable_clock(&RCC_AHB1ENR, RCC_AHB1ENR_IOPAEN);

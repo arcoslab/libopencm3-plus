@@ -21,6 +21,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include "utils/misc.h"
 #include "cdcacm/cdcacm.h"
 #include "utils/common.h"
@@ -133,4 +134,8 @@ int _fstat(NOT_USED int fd, struct stat *pstat) {
 off_t _lseek(int fd, off_t pos, int whence);
 off_t _lseek(NOT_USED int fd, NOT_USED off_t pos, NOT_USED int whence) {
    return 0;
+}
+
+int poll(FILE *f) {
+  return(cdcacm_in_poll(fileno(f)));
 }
