@@ -309,7 +309,7 @@ void cdcacm_write_now(char* buf, int len) {
 }
 
 long cdcacm_write(NOT_USED int fd, const char *ptr, int len) {
-  printled2(1, 10, LGREEN);
+  //printled2(1, 10, LGREEN);
   int index;
   static char buf[CDCACM_PACKET_SIZE];
   static int buf_pos=0;
@@ -318,7 +318,8 @@ long cdcacm_write(NOT_USED int fd, const char *ptr, int len) {
     {
       buf[buf_pos]=ptr[index];
       buf_pos+=1;
-      if (buf_pos == CDCACM_PACKET_SIZE/2) {
+      if (buf_pos == 1) {
+	//if (buf_pos == CDCACM_PACKET_SIZE/2) {
 	cdcacm_write_now(buf, buf_pos);
 	buf_pos=0;
       }	
