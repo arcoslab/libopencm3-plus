@@ -181,10 +181,10 @@ static const struct usb_config_descriptor config = {
 };
 
 /* Buffer to be used for control requests. */
-u8 usbd_control_buffer[128];
+uint8_t usbd_control_buffer[128];
 
 static int cdcacm_control_request(usbd_device *usbd_dev, 
-				  struct usb_setup_data *req, u8 **buf, u16 *len,
+				  struct usb_setup_data *req, uint8_t **buf, uint16_t *len,
 				  void (**complete)(usbd_device *usbd_dev, struct usb_setup_data *req))
 {
 	(void)complete;
@@ -209,7 +209,7 @@ static int cdcacm_control_request(usbd_device *usbd_dev,
 	return 0;
 }
 
-static void cdcacm_callback_in(usbd_device *usbd_dev, u8 ep)
+static void cdcacm_callback_in(usbd_device *usbd_dev, uint8_t ep)
 {
   (void)ep;
   static char buf[CDCACM_PACKET_SIZE];
@@ -221,7 +221,7 @@ static void cdcacm_callback_in(usbd_device *usbd_dev, u8 ep)
 
 int cdcacm_sent=true;
 
-static void cdcacm_callback_out(NOT_USED usbd_device* usbd_dev,NOT_USED u8 ep)
+static void cdcacm_callback_out(NOT_USED usbd_device* usbd_dev,NOT_USED uint8_t ep)
 {
   //printled(1, LORANGE);
   cdcacm_sent=true;
@@ -232,7 +232,7 @@ int cdcacm_get_config(void)
 	return configured;
 }
 
-static void cdcacm_set_config(usbd_device *usbd_dev, u16 wValue)
+static void cdcacm_set_config(usbd_device *usbd_dev, uint16_t wValue)
 {
 	configured = wValue;
 	usbd_ep_setup(usbd_dev, 0x01, USB_ENDPOINT_ATTR_BULK, CDCACM_PACKET_SIZE, cdcacm_callback_in);
