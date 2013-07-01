@@ -263,6 +263,8 @@ static char *get_dev_unique_id(char *s)
 {
 #if defined(STM32F4)
   volatile uint32_t *unique_id_p = (volatile uint32_t *)0x1FFF7A10;
+#elif defined(STM32F3)
+  volatile uint32_t *unique_id_p = (volatile uint32_t *)0x1FFFF7AC;
 #else
   volatile uint32_t *unique_id_p = (volatile uint32_t *)0x1FFFF7E8;
 #endif
@@ -359,7 +361,11 @@ void cdcacm_usb_init(void) {
   }
   //usb setup
   get_dev_unique_id(serial_no);
+#ifdef STM32F4
   usbdev = usbd_init(&otgfs_usb_driver, &dev, &config, usb_strings, sizeof(usb_strings)/sizeof(char *), usbd_control_buffer, sizeof(usbd_control_buffer));
+#else
+  usbdev = usbd_init(&stm32f103_usb_driver, &dev, &config, usb_strings, sizeof(usb_strings)/sizeof(char *), usbd_control_buffer, sizeof(usbd_control_buffer));
+#endif
   usbd_register_set_config_callback(usbdev, cdcacm_set_config);
   usbd_register_reset_callback(usbdev, cdcacm_reset);
 }
