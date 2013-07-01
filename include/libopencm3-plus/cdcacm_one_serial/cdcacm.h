@@ -19,20 +19,6 @@
 #ifndef CDCACM_H
 #define CDCACM_H
 
-int cdcacm_in_poll(int fd);
-
-void cdcacm_poll(void);
-
 void cdcacm_init(void);
-
-int cdcacm_open(const char *path, int flags, int mode);
-
-int cdcacm_close(int fd);
-
-long cdcacm_write(int fd, const char *ptr, int len);
-
-long cdcacm_read(int fd, char *ptr, int len);
-
-int cdcacm_get_config(void);
 
 #endif //CDCACM_H

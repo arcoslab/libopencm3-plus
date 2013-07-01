@@ -16,7 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "misc.h"
+#include <libopencm3-plus/utils/misc.h>
+#include <libopencm3/stm32/gpio.h>
 
 void wait(int a) {
   int i, j;

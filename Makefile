@@ -17,31 +17,64 @@
 ## along with this library.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-LIBNAME		= libopencm3_plus
+PREFIX		?= arm-none-eabi
+#PREFIX		?= arm-elf
 
-PREFIX	        ?= arm-none-eabi
-# PREFIX	?= arm-elf
-CC		= $(PREFIX)-gcc
-AR		= $(PREFIX)-ar
-CFLAGS		= -Os -g \
-		  -Wall -Wextra -Wimplicit-function-declaration \
-		  -Wredundant-decls -Wmissing-prototypes -Wstrict-prototypes \
-		  -Wundef -Wshadow \
-		  -I../../../include -fno-common \
-		  -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 \
-		  -Wstrict-prototypes \
-		  -ffunction-sections -fdata-sections -MD -DSTM32F4
-# ARFLAGS	= rcsv
-ARFLAGS		= rcs
+ifeq ($(DETECT_TOOLCHAIN),)
+DESTDIR		?= /usr/local
+else
+DESTDIR		?= $(shell dirname $(shell readlink -f $(shell which $(PREFIX)-gcc)))/..
+endif
 
-OBJS		:=
+INCDIR		:= $(DESTDIR)/$(PREFIX)/include
+LIBDIR		:= $(DESTDIR)/$(PREFIX)/lib
+SHAREDIR	:= $(DESTDIR)/$(PREFIX)/share/libopencm3/scripts
+INSTALL		:= install
 
-dir := cdcacm
-include $(dir)/rules.mk
-dir := utils
-include $(dir)/rules.mk
-dir := f4discovery
-include $(dir)/rules.mk
+SRCLIBDIR:= $(realpath lib)
+TARGETS:= machines/stm32f4discovery
 
-include Makefile.include
+# Be silent per default, but 'make V=1' will show all compiler calls.
+ifneq ($(V),1)
+Q := @
+# Do not print "Entering directory ...".
+MAKEFLAGS += --no-print-directory
+endif
+
+all: build
+
+build: lib
+
+LIB_DIRS:=$(wildcard $(addprefix lib/,$(TARGETS)))
+$(LIB_DIRS):
+	@printf "  BUILD   $@\n";
+	$(Q)$(MAKE) --directory=$@ SRCLIBDIR=$(SRCLIBDIR)
+
+lib: $(LIB_DIRS)
+	$(Q)true
+
+install: lib
+	@printf "  INSTALL headers\n"
+	$(Q)$(INSTALL) -d $(INCDIR)/libopencm3-plus
+	$(Q)$(INSTALL) -d $(LIBDIR)
+	$(Q)$(INSTALL) -d $(SHAREDIR)
+	$(Q)cp -r include/libopencm3-plus/* $(INCDIR)/libopencm3-plus
+	@printf "  INSTALL libs\n"
+	$(Q)$(INSTALL) -m 0644 lib/*.a $(LIBDIR)
+	@printf "  INSTALL ldscripts\n"
+	$(Q)$(INSTALL) -m 0644 lib/*.ld $(LIBDIR)
+	@printf "  INSTALL scripts\n"
+	$(Q)$(INSTALL) -m 0644 scripts/* $(SHAREDIR)
+
+# Bleh http://www.makelinux.net/make3/make3-CHP-6-SECT-1#make3-CHP-6-SECT-1
+clean:
+	$(Q)for i in $(LIB_DIRS) \
+		     $(EXAMPLE_DIRS); do \
+		if [ -d $$i ]; then \
+			printf "  CLEAN   $$i\n"; \
+			$(MAKE) -C $$i clean SRCLIBDIR=$(SRCLIBDIR) || exit $?; \
+		fi; \
+	done
+
+.PHONY: build lib $(LIB_DIRS) install doc clean
 

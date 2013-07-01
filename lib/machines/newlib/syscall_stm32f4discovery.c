@@ -22,9 +22,11 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include "utils/misc.h"
-#include "cdcacm/cdcacm.h"
-#include "utils/common.h"
+#include <libopencm3-plus/utils/misc.h>
+#include <libopencm3-plus/stm32f4discovery/leds.h>
+#include <libopencm3-plus/cdcacm_one_serial/cdcacm_common.h>
+#include <libopencm3-plus/utils/common.h>
+#include <libopencm3-plus/newlib/syscall.h>
 
 #undef errno
 extern int errno;

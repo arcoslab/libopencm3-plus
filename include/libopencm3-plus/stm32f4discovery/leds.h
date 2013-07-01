@@ -16,16 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UTILS_H
-#define UTILS_H
+#ifndef LEDS_H
+#define LEDS_H
 
-#include <libopencm3/stm32/f4/gpio.h>
-
-void wait(int a);
-
-void printled(int a, int gpiop, int pin);
-
-void printled2(int rep, int time, int gpiop, int pin);
+#include <libopencm3/stm32/gpio.h>
 
 #define LD3 GPIOD, GPIO13 //Orange
 #define LD4 GPIOD, GPIO12 //green
@@ -36,12 +30,5 @@ void printled2(int rep, int time, int gpiop, int pin);
 #define LRED LD5
 #define LBLUE LD6
 
-int strlen2(char s[]);
-
-/* reverse:  reverse string s in place */
-void reverse(char s[]);
-
-void itoa(int n, char s[]);
-
-#endif // UTILS_H
+#endif // LEDS_H
 

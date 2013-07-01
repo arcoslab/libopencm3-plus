@@ -19,8 +19,8 @@
 #include <sys/types.h>
 #include <stdlib.h>
 #include "mutex.h"
-#include "data_structs.h"
-#include "misc.h"
+#include <libopencm3-plus/utils/data_structs.h>
+#include <libopencm3-plus/stm32f4discovery/leds.h>
 
 //Circular buffer:
 //**********

@@ -24,19 +24,16 @@
  * The device's unique id is used as the USB serial number string.
  */
 
-#include <libopencm3/stm32/f4/rcc.h>
-#include <libopencm3/stm32/f4/gpio.h>
 #include <libopencm3/usb/usbd.h>
 #include <libopencm3/usb/cdc.h>
-#include <libopencm3/stm32/f4/gpio.h>
 #include <libopencm3/cm3/nvic.h>
 #include <stdlib.h>
-#include "utils/misc.h"
-#include "utils/data_structs.h"
-#include "cdcacm.h"
-#include "utils/common.h"
+#include <libopencm3-plus/utils/misc.h>
+#include <libopencm3-plus/stm32f4discovery/leds.h>
+#include <libopencm3-plus/utils/data_structs.h>
+#include <libopencm3-plus/cdcacm_one_serial/cdcacm_common.h>
+#include <libopencm3-plus/utils/common.h>
 
-#define IRQ_PRI_USB		(2 << 4)
 #define CDCACM_PACKET_SIZE 	64
 #define CDCACM_READ_BUF_SIZE CDCACM_PACKET_SIZE*4
 
@@ -45,8 +42,6 @@ usbd_device * usbdev;
 cbuf_t cdc_cbuf_in;
 
 static int configured=0;
-
-static char *get_dev_unique_id(char *serial_no);
 
 static const struct usb_endpoint_descriptor comm_endp[] = {{
 	.bLength = USB_DT_ENDPOINT_SIZE,
@@ -354,13 +349,8 @@ int cdcacm_in_poll(int fd) {
   }
 }
 
-void cdcacm_init(void) {
-  //system setup
-  rcc_peripheral_enable_clock(&RCC_AHB1ENR, RCC_AHB1ENR_IOPAEN);
-  rcc_peripheral_enable_clock(&RCC_AHB2ENR, RCC_AHB2ENR_OTGFSEN);
-  gpio_mode_setup(GPIOA, GPIO_MODE_AF, GPIO_PUPD_NONE,
-			GPIO9 | GPIO11 | GPIO12);
-  gpio_set_af(GPIOA, GPIO_AF10, GPIO9 | GPIO11 | GPIO12);
+void cdcacm_usb_init(void) {
+
   //receive buffer setup
   if (cbuf_init(&cdc_cbuf_in, CDCACM_READ_BUF_SIZE) != 0) { //couldn't initialize buffer for usb
     while(1) {
@@ -372,17 +362,10 @@ void cdcacm_init(void) {
   usbdev = usbd_init(&otgfs_usb_driver, &dev, &config, usb_strings, sizeof(usb_strings)/sizeof(char *), usbd_control_buffer, sizeof(usbd_control_buffer));
   usbd_register_set_config_callback(usbdev, cdcacm_set_config);
   usbd_register_reset_callback(usbdev, cdcacm_reset);
-  nvic_set_priority(NVIC_OTG_FS_IRQ, IRQ_PRI_USB);
-  nvic_enable_irq(NVIC_OTG_FS_IRQ);
-  while (cdcacm_get_config() != 1) { wait(1); }; //wait until usb is configured
 }
 
 void cdcacm_poll(void) {
   usbd_poll(usbdev);
 }
 
-void otg_fs_isr(void)
-{
-  usbd_poll(usbdev);
-}
 
