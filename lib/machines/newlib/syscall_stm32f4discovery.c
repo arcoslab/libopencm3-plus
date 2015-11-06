@@ -53,17 +53,31 @@ const devoptab_t *devoptab_list[] = {
    0             /* terminates the list */
 };
 
+
+unsigned char _heap[HEAPSIZE];
+
+
 long _write(int fd, const void *buf, size_t cnt);
+long _read(int fd, char *buf, size_t cnt);
+int _open(const char *file, int flags, int mode);
+long _close(int fd);
+caddr_t _sbrk(int incr);
+int _stat(const char *file, struct stat *pstat);
+int _fstat(int fd, struct stat *pstat);
+off_t _lseek(int fd, off_t pos, int whence);
+
+
+
 long _write(int fd, const void *buf, size_t cnt) {
   return (*devoptab_list[fd]).write(fd, buf, cnt);
 }
 
-long _read(int fd, char *buf, size_t cnt);
+
 long _read(int fd, char *buf, size_t cnt) {
   return (*devoptab_list[fd]).read(fd, buf, cnt);
 }
 
-int _open(const char *file, int flags, int mode);
+
 int _open(const char *file, int flags, int mode) {
   int which_devoptab = 0;
   int fd = -1;
@@ -82,14 +96,14 @@ int _open(const char *file, int flags, int mode) {
   return fd;
 }
 
-long _close(int fd);
+
 long _close(int fd) {
   return (*devoptab_list[fd]).close(fd);
 }
 
-unsigned char _heap[HEAPSIZE];
 
-caddr_t _sbrk(int incr);
+
+
 caddr_t _sbrk(int incr) {
   static unsigned char *heap_end;
   unsigned char *prev_heap_end;
@@ -121,19 +135,19 @@ caddr_t _sbrk(int incr) {
   return (caddr_t) prev_heap_end;
 }
 
-int _stat(const char *file, struct stat *pstat);
+
 int _stat(NOT_USED const char *file, struct stat *pstat) {
   pstat->st_mode = S_IFCHR;
   return 0;
 }
 
-int _fstat(int fd, struct stat *pstat);
+
 int _fstat(NOT_USED int fd, struct stat *pstat) {
   pstat->st_mode = S_IFCHR;
   return 0;
 }
 
-off_t _lseek(int fd, off_t pos, int whence);
+
 off_t _lseek(NOT_USED int fd, NOT_USED off_t pos, NOT_USED int whence) {
    return 0;
 }
