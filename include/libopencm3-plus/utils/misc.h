@@ -30,7 +30,7 @@ int strlen2(char s[]);
 /* reverse:  reverse string s in place */
 void reverse(char s[]);
 
-void itoa(int n, char s[]);
+void my_itoa(int n, char s[]);
 
 #endif // MISC_H
 

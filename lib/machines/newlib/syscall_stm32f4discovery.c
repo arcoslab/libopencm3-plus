@@ -113,7 +113,7 @@ caddr_t _sbrk(int incr) {
   if (first==2) {
     write( 2, "Asking for: ", 12);
     char incr_c[15];
-    itoa(incr, incr_c);
+    my_itoa(incr, incr_c);
     write( 2, incr_c, strlen2(incr_c));
     write( 2, " bytes.\n", 8);
   } else {
