@@ -24,7 +24,7 @@
  * The device's unique id is used as the USB serial number string.
  */
 
-#include <libopencm3/stm32/f3/rcc.h>
+#include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/usb/usbd.h>
 #include <libopencm3/usb/cdc.h>
