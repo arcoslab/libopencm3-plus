@@ -47,7 +47,7 @@ CFLAGS		= -Os -g \
 		  -I../../../include -fno-common \
 		  -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 \
 		  -Wstrict-prototypes \
-		  -ffunction-sections -fdata-sections -MD -DSTM32F4 -DSTM32F4DISCOVERY
+		  -ffunction-sections -fdata-sections -MD -DSTM32F4 -DSTM32F411DISCOVERY
 LDFLAGS		= 
 # ARFLAGS	= rcsv
 ARFLAGS		= rcs
