@@ -364,7 +364,7 @@ void cdcacm_usb_init(void) {
 #ifdef STM32F4
   usbdev = usbd_init(&otgfs_usb_driver, &dev, &config, usb_strings, sizeof(usb_strings)/sizeof(char *), usbd_control_buffer, sizeof(usbd_control_buffer));
 #else
-  usbdev = usbd_init(&otgfs_usb_driver, &dev, &config, usb_strings, sizeof(usb_strings)/sizeof(char *), usbd_control_buffer, sizeof(usbd_control_buffer));
+  usbdev = usbd_init(&st_usbfs_v1_usb_driver, &dev, &config, usb_strings, sizeof(usb_strings)/sizeof(char *), usbd_control_buffer, sizeof(usbd_control_buffer));
 #endif
   usbd_register_set_config_callback(usbdev, cdcacm_set_config);
   usbd_register_reset_callback(usbdev, cdcacm_reset);
