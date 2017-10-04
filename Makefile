@@ -32,7 +32,7 @@ SHAREDIR	:= $(DESTDIR)/$(PREFIX)/share/libopencm3/scripts
 INSTALL		:= install
 
 SRCLIBDIR:= $(realpath lib)
-TARGETS:= machines/stm32f4discovery machines/stm32f3discovery
+TARGETS:= machines/stm32f4discovery machines/stm32f3discovery machines/stm32f411discovery
 
 # Be silent per default, but 'make V=1' will show all compiler calls.
 ifneq ($(V),1)
