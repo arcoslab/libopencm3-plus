@@ -30,7 +30,7 @@
 
 #undef errno
 extern int errno;
-#define HEAPSIZE 32768
+#define HEAPSIZE 2048
 
 typedef struct {
   const char *name;
@@ -111,11 +111,11 @@ caddr_t _sbrk(int incr) {
   ///*
   static int first=0;
   if (first==2) {
-    write( 2, "Asking for: ", 12);
+    //write( 2, "Asking for: ", 12);
     char incr_c[15];
     my_itoa(incr, incr_c);
-    write( 2, incr_c, strlen2(incr_c));
-    write( 2, " bytes.\n", 8);
+    //write( 2, incr_c, strlen2(incr_c));
+    //write( 2, " bytes.\n", 8);
   } else {
     first++;
   }
@@ -128,7 +128,7 @@ caddr_t _sbrk(int incr) {
 /* heap overflow—announce on stderr */
     printled(10, LRED);
     printled(10, LORANGE);
-    write( 2, "Heap overflow!\n", 15 );
+    //write( 2, "Heap overflow!\n", 15 );
     abort();
   }
   heap_end += incr;
